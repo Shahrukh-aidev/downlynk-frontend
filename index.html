@@ -240,185 +240,157 @@
       <p>The Downlynk desktop app gives you download history, pause & resume, custom save locations — all on your Windows PC.</p>
       <div class="desktop-btns">
         <a href="#" class="btn-primary" target="_blank">⬇ Download for Windows</a>
-        <a href="#how" class="btn-secondary">Learn More</a>
+        <a href="#" class="btn-secondary">Learn More</a>
       </div>
     </div>
     <div class="desktop-visual">
-      <div style="font-size:64px">▶</div>
-      <div style="font-size:22px;font-weight:800">Downlynk</div>
-      <div style="font-family:var(--font-mono);font-size:12px;color:var(--muted)">v1.0.0 · Windows</div>
-      <div class="app-size">~53 MB · Free</div>
+      <div style="font-size: 64px;">💻</div>
+      <div class="app-size">v1.2.0 • 45MB</div>
     </div>
   </div>
 </section>
 
 <footer>
   <div class="footer-logo">Down<span>lynk</span></div>
-  <div class="footer-note">© 2026 Downlynk · For personal use only</div>
+  <div class="footer-note">Free, fast, and unlimited video downloads.</div>
   <div class="footer-links">
-    <a href="#">Terms</a>
-    <a href="#">Privacy</a>
-    <a href="#">Desktop App</a>
+    <a href="#">Privacy Policy</a>
+    <a href="#">Terms of Service</a>
+    <a href="#">Contact</a>
   </div>
 </footer>
 
 <script>
-let isDownloading = false;
-let currentFormat = 'video';
+  let currentFormat = 'video';
 
-function setFormat(fmt) {
-  currentFormat = fmt;
-  document.getElementById('formatVideo').classList.toggle('active', fmt === 'video');
-  document.getElementById('formatAudio').classList.toggle('active', fmt === 'audio');
-  
-  const qualityWrapper = document.querySelector('.quality-wrapper');
-  if (fmt === 'audio') {
-    qualityWrapper.style.display = 'none';
-  } else {
-    qualityWrapper.style.display = 'flex';
+  function setFormat(format) {
+    currentFormat = format;
+    document.getElementById('formatVideo').classList.toggle('active', format === 'video');
+    document.getElementById('formatAudio').classList.toggle('active', format === 'audio');
+    document.querySelector('.quality-wrapper').style.opacity = format === 'audio' ? '0.5' : '1';
+    document.getElementById('qualitySelect').disabled = format === 'audio';
   }
-}
 
-document.getElementById('urlInput').addEventListener('paste', e => {
-  setTimeout(() => fetchVideoInfo(e.target.value.trim()), 100);
-});
-document.getElementById('urlInput').addEventListener('keydown', e => {
-  if (e.key === 'Enter') startDownload();
-});
+  const urlInput = document.getElementById('urlInput');
+  let typingTimer;
 
-async function fetchVideoInfo(url) {
-  if (!url || !url.startsWith('http')) return;
-  try {
-    const res = await fetch(BACKEND_URL + '/info', {
-      method: 'POST',
-      headers: {'Content-Type':'application/json'},
-      body: JSON.stringify({url})
-    });
-    const data = await res.json();
-    if (data.title) {
-      document.getElementById('videoTitle').textContent = data.title;
-      document.getElementById('videoSub').textContent = `${data.uploader||''} · ${data.platform||''} · ${formatDuration(data.duration||0)}`;
-      if (data.thumbnail) document.getElementById('videoThumb').src = data.thumbnail;
+  // Auto-fetch info when user stops typing
+  urlInput.addEventListener('input', function() {
+    clearTimeout(typingTimer);
+    const url = this.value.trim();
+    if (url) {
+      typingTimer = setTimeout(() => fetchInfo(url), 800);
+    } else {
+      document.getElementById('videoInfo').classList.remove('active');
+      document.getElementById('statusMsg').textContent = "";
+    }
+  });
+
+  async function fetchInfo(url) {
+    const statusMsg = document.getElementById('statusMsg');
+    statusMsg.textContent = "Fetching video info...";
+    statusMsg.className = "status-msg";
+    document.getElementById('videoInfo').classList.remove('active');
+
+    try {
+      const res = await fetch(`${BACKEND_URL}/info`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url })
+      });
       
-      const qualitiesDiv = document.getElementById('videoQualities');
-      let qualitiesHtml = '';
-      if (data.available_qualities) {
-        data.available_qualities.forEach(q => {
-          qualitiesHtml += `<span class="quality-tag">${q}</span>`;
+      const data = await res.json();
+
+      // Catch backend errors before trying to populate the UI
+      if (!res.ok || data.error) {
+        statusMsg.textContent = "⚠️ " + (data.error || "Failed to fetch video info.");
+        statusMsg.className = "status-msg error";
+        return; // Stop execution to prevent UI crash
+      }
+
+      // If no error, populate the UI normally
+      document.getElementById('videoThumb').src = data.thumbnail || '';
+      document.getElementById('videoTitle').textContent = data.title;
+      document.getElementById('videoSub').textContent = `${data.uploader} • ${data.platform}`;
+      
+      const qContainer = document.getElementById('videoQualities');
+      qContainer.innerHTML = '';
+      
+      // Safety check: ensure qualities is an array before looping
+      if (data.qualities && Array.isArray(data.qualities)) {
+        data.qualities.forEach(q => {
+          const span = document.createElement('span');
+          span.className = 'quality-tag';
+          span.textContent = q;
+          qContainer.appendChild(span);
         });
       }
-      if (data.has_audio) {
-        qualitiesHtml += `<span class="quality-tag">Audio</span>`;
-      }
-      qualitiesDiv.innerHTML = qualitiesHtml;
-      
+
       document.getElementById('videoInfo').classList.add('active');
+      statusMsg.textContent = "";
+      
+    } catch (err) {
+      console.error("Fetch Error:", err);
+      statusMsg.textContent = "⚠️ Network error. Is the backend running?";
+      statusMsg.className = "status-msg error";
     }
-  } catch(e) {
-    console.error('Info fetch failed:', e);
   }
-}
 
-function formatDuration(sec) {
-  if (!sec) return '0:00';
-  const m = Math.floor(sec / 60);
-  const s = sec % 60;
-  return `${m}:${s.toString().padStart(2, '0')}`;
-}
-
-async function startDownload() {
-  if (isDownloading) return;
-  const url = document.getElementById('urlInput').value.trim();
-  const quality = document.getElementById('qualitySelect').value;
-  
-  if (!url) { setStatus('⚠ Please paste a video URL first.','error'); return; }
-  if (!url.startsWith('http')) { setStatus('⚠ Please enter a valid URL.','error'); return; }
-
-  isDownloading = true;
-  const btn = document.getElementById('downloadBtn');
-  btn.disabled = true; 
-  btn.innerHTML = '<span>⏳</span> Processing...';
-  document.getElementById('progressBox').classList.add('active');
-  setStatus('','');
-
-  let fake = 0;
-  const fakeTimer = setInterval(() => {
-    if (fake < 80) { 
-      fake += Math.random() * 7; 
-      setProgress(Math.min(fake, 80), currentFormat === 'audio' ? 'Extracting audio...' : 'Downloading video...'); 
-    }
-  }, 700);
-
-  try {
-    setProgress(10, 'Connecting...');
+  function startDownload() {
+    const url = urlInput.value.trim();
+    if (!url) return alert("Please enter a URL");
     
-    const response = await fetch(BACKEND_URL + '/download', {
+    const quality = document.getElementById('qualitySelect').value;
+    const btn = document.getElementById('downloadBtn');
+    const statusMsg = document.getElementById('statusMsg');
+    
+    btn.disabled = true;
+    btn.innerHTML = '⏳ Downloading...';
+    statusMsg.textContent = "Requesting download... this might take a minute.";
+    statusMsg.className = "status-msg";
+
+    fetch(`${BACKEND_URL}/download`, {
       method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({
-        url: url, 
-        quality: currentFormat === 'audio' ? 'audio' : quality,
-        format: currentFormat
-      })
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ url, quality, format: currentFormat })
+    })
+    .then(async res => {
+      if (!res.ok) {
+         const data = await res.json();
+         throw new Error(data.error || "Download failed");
+      }
+      
+      const disposition = res.headers.get('Content-Disposition');
+      let filename = "download.mp4";
+      if (disposition && disposition.indexOf('filename="') !== -1) {
+         filename = disposition.split('filename="')[1].split('"')[0];
+      }
+
+      return res.blob().then(blob => ({ blob, filename }));
+    })
+    .then(({ blob, filename }) => {
+      const downloadUrl = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = downloadUrl;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      window.URL.revokeObjectURL(downloadUrl);
+      
+      statusMsg.textContent = "✅ Download complete!";
+      statusMsg.className = "status-msg success";
+    })
+    .catch(err => {
+      console.error(err);
+      statusMsg.textContent = "❌ " + err.message;
+      statusMsg.className = "status-msg error";
+    })
+    .finally(() => {
+      btn.disabled = false;
+      btn.innerHTML = '<span>⬇</span> Download';
     });
-    
-    clearInterval(fakeTimer);
-    
-    if (!response.ok) { 
-      const e = await response.json(); 
-      throw new Error(e.error || 'Download failed'); 
-    }
-    
-    setProgress(95, 'Preparing your file...');
-    
-    const disposition = response.headers.get('Content-Disposition');
-    let filename = currentFormat === 'audio' ? 'audio.mp3' : 'video.mp4';
-    if (disposition?.includes('filename=')) {
-      filename = disposition.split('filename=')[1].replace(/"/g,'').trim();
-    }
-    
-    const blob = await response.blob();
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob); 
-    a.download = filename;
-    document.body.appendChild(a); 
-    a.click(); 
-    document.body.removeChild(a);
-    
-    setProgress(100, 'Complete!');
-    setStatus('✓ Download started! Check your downloads folder.', 'success');
-  } catch(err) {
-    clearInterval(fakeTimer);
-    document.getElementById('progressBox').classList.remove('active');
-    setProgress(0, '');
-    
-    if (err.message.includes('fetch') || err.message.includes('Failed to fetch')) {
-      setStatus('⚠ Cannot connect to server. Please try again.', 'error');
-    } else {
-      setStatus('⚠ ' + err.message, 'error');
-    }
-  } finally {
-    isDownloading = false;
-    btn.disabled = false; 
-    btn.innerHTML = '<span>⬇</span> Download';
-    setTimeout(() => { 
-      document.getElementById('progressBox').classList.remove('active'); 
-      setProgress(0, ''); 
-    }, 4000);
   }
-}
-
-function setProgress(pct, text) {
-  document.getElementById('progressBar').style.width = pct + '%';
-  document.getElementById('progressPct').textContent = Math.round(pct) + '%';
-  if (text) document.getElementById('progressText').textContent = text;
-}
-
-function setStatus(msg, type) {
-  const el = document.getElementById('statusMsg');
-  el.textContent = msg; 
-  el.className = 'status-msg' + (type ? ' ' + type : '');
-}
 </script>
 </body>
 </html>
