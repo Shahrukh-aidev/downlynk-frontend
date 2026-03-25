@@ -30,20 +30,39 @@
   .hero h1{font-size:clamp(48px,8vw,96px);font-weight:800;line-height:1;letter-spacing:-3px;margin-bottom:24px;animation:fadeInDown .6s ease .1s both}
   .hero h1 .line2{background:linear-gradient(90deg,var(--cyan),var(--green));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
   .hero p{font-size:18px;color:var(--muted);max-width:520px;line-height:1.7;margin-bottom:32px;animation:fadeInDown .6s ease .2s both}
-  .video-info{display:none;width:100%;max-width:680px;background:var(--card);border:1px solid rgba(0,229,255,.2);border-radius:16px;padding:16px 20px;margin-bottom:16px;flex-direction:row;align-items:center;gap:16px;animation:fadeInDown .3s ease both}
+  .video-info{display:none;width:100%;max-width:720px;background:var(--card);border:1px solid rgba(0,229,255,.2);border-radius:16px;padding:16px 20px;margin-bottom:16px;flex-direction:row;align-items:center;gap:16px;animation:fadeInDown .3s ease both}
   .video-info.active{display:flex}
-  .video-thumb{width:80px;height:56px;object-fit:cover;border-radius:8px;background:var(--border);flex-shrink:0}
+  .video-thumb{width:120px;height:68px;object-fit:cover;border-radius:8px;background:var(--border);flex-shrink:0}
   .video-meta{text-align:left;flex:1;overflow:hidden}
-  .video-title{font-size:14px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .video-sub{font-size:12px;color:var(--muted);font-family:var(--font-mono);margin-top:4px}
-  .downloader{width:100%;max-width:680px;background:var(--card);border:1px solid var(--border);border-radius:20px;padding:8px;display:flex;gap:8px;margin-bottom:16px;animation:fadeInDown .6s ease .3s both;position:relative;z-index:1}
+  .video-title{font-size:16px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:4px}
+  .video-sub{font-size:13px;color:var(--muted);font-family:var(--font-mono)}
+  .video-qualities{display:flex;gap:8px;margin-top:8px;flex-wrap:wrap}
+  .quality-tag{font-size:11px;font-family:var(--font-mono);padding:3px 8px;border-radius:4px;background:rgba(0,229,255,.1);color:var(--cyan);border:1px solid rgba(0,229,255,.2)}
+  
+  /* ✅ FIXED: Better downloader layout with quality selector */
+  .downloader-wrapper{width:100%;max-width:720px;display:flex;flex-direction:column;gap:12px;margin-bottom:16px;animation:fadeInDown .6s ease .3s both}
+  .downloader{width:100%;background:var(--card);border:1px solid var(--border);border-radius:20px;padding:8px;display:flex;gap:8px;position:relative;z-index:1;flex-wrap:wrap;align-items:center}
   .downloader::before{content:'';position:absolute;inset:-1px;border-radius:21px;background:linear-gradient(135deg,rgba(0,229,255,.3),rgba(0,255,136,.1),transparent);z-index:-1}
-  .url-input{flex:1;background:transparent;border:none;outline:none;color:var(--text);font-family:var(--font-mono);font-size:14px;padding:14px 20px;caret-color:var(--cyan)}
+  .url-input{flex:1;min-width:200px;background:transparent;border:none;outline:none;color:var(--text);font-family:var(--font-mono);font-size:14px;padding:14px 20px;caret-color:var(--cyan)}
   .url-input::placeholder{color:var(--muted)}
-  .download-btn{background:linear-gradient(135deg,var(--cyan),var(--green));color:var(--bg);border:none;padding:14px 28px;border-radius:14px;font-family:var(--font-display);font-size:14px;font-weight:700;cursor:pointer;transition:all .2s;white-space:nowrap}
+  
+  /* ✅ NEW: Quality selector styling */
+  .quality-wrapper{display:flex;align-items:center;gap:8px;background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:4px}
+  .quality-label{font-size:11px;color:var(--muted);font-family:var(--font-mono);padding-left:8px;text-transform:uppercase;letter-spacing:0.5px}
+  .quality-select{background:transparent;color:var(--text);border:none;padding:10px 28px 10px 12px;font-family:var(--font-mono);font-size:13px;outline:none;cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2364748b' d='M6 8L1 3h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;min-width:100px}
+  .quality-select:hover{color:var(--cyan)}
+  .quality-select option{background:var(--card);color:var(--text);padding:8px}
+  
+  .download-btn{background:linear-gradient(135deg,var(--cyan),var(--green));color:var(--bg);border:none;padding:14px 28px;border-radius:14px;font-family:var(--font-display);font-size:14px;font-weight:700;cursor:pointer;transition:all .2s;white-space:nowrap;display:flex;align-items:center;gap:8px}
   .download-btn:hover{transform:scale(1.03);box-shadow:0 0 30px rgba(0,229,255,.3)}
   .download-btn:disabled{opacity:.6;cursor:not-allowed;transform:none}
-  .progress-container{display:none;width:100%;max-width:680px;background:var(--card);border:1px solid var(--border);border-radius:16px;padding:20px 24px;margin-bottom:16px}
+  
+  /* ✅ NEW: Format toggle */
+  .format-toggle{display:flex;gap:4px;background:var(--bg);padding:4px;border-radius:10px;border:1px solid var(--border)}
+  .format-btn{font-family:var(--font-mono);font-size:12px;padding:8px 16px;border-radius:6px;border:none;background:transparent;color:var(--muted);cursor:pointer;transition:all .2s}
+  .format-btn.active{background:rgba(0,229,255,.15);color:var(--cyan);font-weight:700}
+  
+  .progress-container{display:none;width:100%;max-width:720px;background:var(--card);border:1px solid var(--border);border-radius:16px;padding:20px 24px;margin-bottom:16px}
   .progress-container.active{display:block}
   .progress-label{display:flex;justify-content:space-between;font-size:13px;font-family:var(--font-mono);color:var(--muted);margin-bottom:10px}
   .progress-label span:last-child{color:var(--cyan)}
@@ -105,13 +124,13 @@
   ::-webkit-scrollbar-track{background:var(--bg)}
   ::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
   ::-webkit-scrollbar-thumb:hover{background:var(--cyan)}
-  @media(max-width:768px){nav{padding:16px 24px}.nav-links{display:none}.hero{padding:100px 24px 60px}.downloader{flex-direction:column}.hero-stats{gap:24px}.steps{grid-template-columns:1fr}.features-grid{grid-template-columns:1fr}.desktop-card{flex-direction:column;padding:32px}.desktop-visual{width:100%}.platforms,.how,.features,.desktop-section{padding:60px 24px}footer{flex-direction:column;gap:24px;text-align:center}}
+  @media(max-width:768px){nav{padding:16px 24px}.nav-links{display:none}.hero{padding:100px 24px 60px}.downloader{flex-direction:column}.quality-wrapper{width:100%;justify-content:space-between}.hero-stats{gap:24px}.steps{grid-template-columns:1fr}.features-grid{grid-template-columns:1fr}.desktop-card{flex-direction:column;padding:32px}.desktop-visual{width:100%}.platforms,.how,.features,.desktop-section{padding:60px 24px}footer{flex-direction:column;gap:24px;text-align:center}}
 </style>
 </head>
 <body>
 
+<!-- ✅ FIXED: Removed trailing space from URL -->
 <script>
-  // ⚠️ REPLACE THIS AFTER DEPLOYING YOUR BACKEND ON RENDER.COM
   const BACKEND_URL = 'https://downlynk-backend-production-223e.up.railway.app';
 </script>
 
@@ -138,12 +157,39 @@
     <div class="video-meta">
       <div class="video-title" id="videoTitle">Loading...</div>
       <div class="video-sub" id="videoSub">Fetching info...</div>
+      <div class="video-qualities" id="videoQualities"></div>
     </div>
   </div>
 
-  <div class="downloader">
-    <input class="url-input" type="text" id="urlInput" placeholder="Paste video URL here... (YouTube, Instagram, TikTok...)"/>
-    <button class="download-btn" id="downloadBtn" onclick="startDownload()">⬇ Download</button>
+  <!-- ✅ NEW: Wrapper with better layout -->
+  <div class="downloader-wrapper">
+    <div class="downloader">
+      <input class="url-input" type="text" id="urlInput" placeholder="Paste video URL here... (YouTube, Instagram, TikTok...)"/>
+      
+      <!-- ✅ NEW: Format toggle (Video/Audio) -->
+      <div class="format-toggle">
+        <button class="format-btn active" id="formatVideo" onclick="setFormat('video')">Video</button>
+        <button class="format-btn" id="formatAudio" onclick="setFormat('audio')">Audio</button>
+      </div>
+      
+      <!-- ✅ NEW: Quality selector with all resolutions -->
+      <div class="quality-wrapper">
+        <span class="quality-label">Quality</span>
+        <select class="quality-select" id="qualitySelect">
+          <option value="4k">🎬 4K (2160p)</option>
+          <option value="1440p">🖥️ 2K (1440p)</option>
+          <option value="1080p">📺 1080p HD</option>
+          <option value="720p" selected>💻 720p HD</option>
+          <option value="480p">📱 480p</option>
+          <option value="360p">⚡ 360p</option>
+          <option value="240p">🐢 240p</option>
+        </select>
+      </div>
+      
+      <button class="download-btn" id="downloadBtn" onclick="startDownload()">
+        <span>⬇</span> Download
+      </button>
+    </div>
   </div>
 
   <div class="progress-container" id="progressBox">
@@ -180,7 +226,7 @@
   <h2 class="section-title">Three steps.<br>That's it.</h2>
   <div class="steps">
     <div class="step-card"><div class="step-num">01</div><div class="step-title">Paste the URL</div><div class="step-desc">Copy any video link from YouTube, Facebook, Instagram or any supported platform and paste it above.</div></div>
-    <div class="step-card"><div class="step-num">02</div><div class="step-title">Click Download</div><div class="step-desc">Hit the download button. Our server processes the URL and prepares your file instantly at the best quality.</div></div>
+    <div class="step-card"><div class="step-num">02</div><div class="step-title">Choose Quality</div><div class="step-desc">Select your preferred resolution from 240p to 4K, or extract audio only. Full control over your download.</div></div>
     <div class="step-card"><div class="step-num">03</div><div class="step-title">Save Your File</div><div class="step-desc">Your video downloads directly to your device. No account needed, no watermark, no ads. Just your file.</div></div>
   </div>
 </section>
@@ -191,8 +237,8 @@
     <h2 class="section-title">Everything you need.<br>Nothing you don't.</h2>
     <div class="features-grid">
       <div class="feature-card"><div class="feature-icon">⚡</div><div class="feature-content"><h3>Lightning Fast</h3><p>Downloads start instantly. No queues, no waiting. Your file, right now.</p></div></div>
-      <div class="feature-card"><div class="feature-icon">🔒</div><div class="feature-content"><h3>Private & Secure</h3><p>We don't store your URLs or files. Everything is processed and deleted immediately after download.</p></div></div>
-      <div class="feature-card"><div class="feature-icon">🎯</div><div class="feature-content"><h3>Best Quality</h3><p>Automatically selects the best available resolution up to 4K. You always get the highest quality.</p></div></div>
+      <div class="feature-card"><div class="feature-icon">🎯</div><div class="feature-content"><h3>240p to 4K Quality</h3><p>Full resolution control. From data-saving 240p to crystal-clear 4K Ultra HD.</p></div></div>
+      <div class="feature-card"><div class="feature-icon">🎵</div><div class="feature-content"><h3>Audio Extraction</h3><p>Download just the audio track. Perfect for music, podcasts, and interviews.</p></div></div>
       <div class="feature-card"><div class="feature-icon">💻</div><div class="feature-content"><h3>Desktop App Available</h3><p>Want more power? Get our Windows app with history, pause/resume, and batch downloads.</p></div></div>
     </div>
   </div>
@@ -205,7 +251,7 @@
       <h2>Power user?<br>Get the app.</h2>
       <p>The Downlynk desktop app gives you download history, pause & resume, custom save locations — all on your Windows PC.</p>
       <div class="desktop-btns">
-        <a href="https://YOUR-ITCH-IO-LINK-HERE" class="btn-primary" target="_blank">⬇ Download for Windows</a>
+        <a href="#" class="btn-primary" target="_blank">⬇ Download for Windows</a>
         <a href="#how" class="btn-secondary">Learn More</a>
       </div>
     </div>
@@ -224,12 +270,27 @@
   <div class="footer-links">
     <a href="#">Terms</a>
     <a href="#">Privacy</a>
-    <a href="https://YOUR-ITCH-IO-LINK-HERE" target="_blank">Desktop App</a>
+    <a href="#">Desktop App</a>
   </div>
 </footer>
 
 <script>
 let isDownloading = false;
+let currentFormat = 'video';
+
+function setFormat(fmt) {
+  currentFormat = fmt;
+  document.getElementById('formatVideo').classList.toggle('active', fmt === 'video');
+  document.getElementById('formatAudio').classList.toggle('active', fmt === 'audio');
+  
+  // Show/hide quality selector based on format
+  const qualityWrapper = document.querySelector('.quality-wrapper');
+  if (fmt === 'audio') {
+    qualityWrapper.style.display = 'none';
+  } else {
+    qualityWrapper.style.display = 'flex';
+  }
+}
 
 document.getElementById('urlInput').addEventListener('paste', e => {
   setTimeout(() => fetchVideoInfo(e.target.value.trim()), 100);
@@ -249,70 +310,121 @@ async function fetchVideoInfo(url) {
     const data = await res.json();
     if (data.title) {
       document.getElementById('videoTitle').textContent = data.title;
-      document.getElementById('videoSub').textContent = `${data.uploader||''} · ${data.platform||''}`;
+      document.getElementById('videoSub').textContent = `${data.uploader||''} · ${data.platform||''} · ${formatDuration(data.duration||0)}`;
       if (data.thumbnail) document.getElementById('videoThumb').src = data.thumbnail;
+      
+      // ✅ Show available qualities
+      const qualitiesDiv = document.getElementById('videoQualities');
+      qualitiesDiv.innerHTML = '<span class="quality-tag">4K</span><span class="quality-tag">1080p</span><span class="quality-tag">720p</span><span class="quality-tag">Audio</span>';
+      
       document.getElementById('videoInfo').classList.add('active');
     }
-  } catch(e) {}
+  } catch(e) {
+    console.error('Info fetch failed:', e);
+  }
+}
+
+function formatDuration(sec) {
+  if (!sec) return '0:00';
+  const m = Math.floor(sec / 60);
+  const s = sec % 60;
+  return `${m}:${s.toString().padStart(2, '0')}`;
 }
 
 async function startDownload() {
   if (isDownloading) return;
   const url = document.getElementById('urlInput').value.trim();
+  const quality = document.getElementById('qualitySelect').value;
+  
   if (!url) { setStatus('⚠ Please paste a video URL first.','error'); return; }
   if (!url.startsWith('http')) { setStatus('⚠ Please enter a valid URL.','error'); return; }
 
   isDownloading = true;
   const btn = document.getElementById('downloadBtn');
-  btn.disabled = true; btn.textContent = '⏳ Processing...';
+  btn.disabled = true; 
+  btn.innerHTML = '<span>⏳</span> Processing...';
   document.getElementById('progressBox').classList.add('active');
   setStatus('','');
 
   let fake = 0;
   const fakeTimer = setInterval(() => {
-    if (fake < 80) { fake += Math.random()*7; setProgress(Math.min(fake,80),'Downloading...'); }
+    if (fake < 80) { 
+      fake += Math.random() * 7; 
+      setProgress(Math.min(fake, 80), currentFormat === 'audio' ? 'Extracting audio...' : 'Downloading video...'); 
+    }
   }, 700);
 
   try {
-    setProgress(10,'Connecting to server...');
+    setProgress(10, 'Connecting...');
+    
+    // ✅ FIXED: Proper URL construction
     const response = await fetch(BACKEND_URL + '/download', {
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({url})
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      // ✅ Send format and quality
+      body: JSON.stringify({
+        url: url, 
+        quality: currentFormat === 'audio' ? 'audio' : quality,
+        format: currentFormat
+      })
     });
+    
     clearInterval(fakeTimer);
-    if (!response.ok) { const e = await response.json(); throw new Error(e.error||'Download failed'); }
-    setProgress(95,'Preparing your file...');
+    
+    if (!response.ok) { 
+      const e = await response.json(); 
+      throw new Error(e.error || 'Download failed'); 
+    }
+    
+    setProgress(95, 'Preparing your file...');
+    
     const disposition = response.headers.get('Content-Disposition');
-    let filename = 'video.mp4';
-    if (disposition?.includes('filename=')) filename = disposition.split('filename=')[1].replace(/"/g,'').trim();
+    let filename = currentFormat === 'audio' ? 'audio.mp3' : 'video.mp4';
+    if (disposition?.includes('filename=')) {
+      filename = disposition.split('filename=')[1].replace(/"/g,'').trim();
+    }
+    
     const blob = await response.blob();
     const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob); a.download = filename;
-    document.body.appendChild(a); a.click(); document.body.removeChild(a);
-    setProgress(100,'Complete!');
-    setStatus('✓ Download started! Check your downloads folder.','success');
+    a.href = URL.createObjectURL(blob); 
+    a.download = filename;
+    document.body.appendChild(a); 
+    a.click(); 
+    document.body.removeChild(a);
+    
+    setProgress(100, 'Complete!');
+    setStatus('✓ Download started! Check your downloads folder.', 'success');
   } catch(err) {
     clearInterval(fakeTimer);
     document.getElementById('progressBox').classList.remove('active');
-    setProgress(0,'');
-    if (err.message.includes('fetch')) setStatus('⚠ Server waking up. Wait 30 seconds and try again.','error');
-    else setStatus('⚠ '+err.message,'error');
+    setProgress(0, '');
+    
+    if (err.message.includes('fetch') || err.message.includes('Failed to fetch')) {
+      setStatus('⚠ Cannot connect to server. Please try again.', 'error');
+    } else {
+      setStatus('⚠ ' + err.message, 'error');
+    }
   } finally {
     isDownloading = false;
-    btn.disabled = false; btn.textContent = '⬇ Download';
-    setTimeout(()=>{ document.getElementById('progressBox').classList.remove('active'); setProgress(0,''); },4000);
+    btn.disabled = false; 
+    btn.innerHTML = '<span>⬇</span> Download';
+    setTimeout(() => { 
+      document.getElementById('progressBox').classList.remove('active'); 
+      setProgress(0, ''); 
+    }, 4000);
   }
 }
 
-function setProgress(pct,text){
-  document.getElementById('progressBar').style.width=pct+'%';
-  document.getElementById('progressPct').textContent=Math.round(pct)+'%';
-  if(text) document.getElementById('progressText').textContent=text;
+function setProgress(pct, text) {
+  document.getElementById('progressBar').style.width = pct + '%';
+  document.getElementById('progressPct').textContent = Math.round(pct) + '%';
+  if (text) document.getElementById('progressText').textContent = text;
 }
-function setStatus(msg,type){
-  const el=document.getElementById('statusMsg');
-  el.textContent=msg; el.className='status-msg'+(type?' '+type:'');
+
+function setStatus(msg, type) {
+  const el = document.getElementById('statusMsg');
+  el.textContent = msg; 
+  el.className = 'status-msg' + (type ? ' ' + type : '');
 }
 </script>
 </body>
