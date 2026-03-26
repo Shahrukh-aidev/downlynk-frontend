@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Downlynk — Download Anything, Instantly</title>
+<title>Downlynk — Universal Video Downloader</title>
 <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
   :root{--bg:#080c14;--bg2:#0d1321;--card:#0f1824;--border:#1e2d42;--cyan:#00e5ff;--green:#00ff88;--red:#ff4d6d;--text:#e2e8f0;--muted:#64748b;--font-display:'Syne',sans-serif;--font-mono:'Space Mono',monospace}
@@ -87,36 +87,13 @@
   .step-desc{font-size:14px;color:var(--muted);line-height:1.7}
   .features{padding:80px 48px;background:var(--bg2)}
   .features-inner{max-width:1100px;margin:0 auto}
-  .features-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:24px;margin-top:48px}
+  .features-grid{display:grid;grid-template-columns:repeat(2,1fr));gap:24px;margin-top:48px}
   .feature-card{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:32px;display:flex;gap:20px;align-items:flex-start;transition:all .3s}
   .feature-card:hover{border-color:rgba(0,255,136,.3)}
   .feature-icon{width:48px;height:48px;background:rgba(0,229,255,.08);border:1px solid rgba(0,229,255,.15);border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
   .feature-content h3{font-size:18px;font-weight:700;margin-bottom:8px}
   .feature-content p{font-size:14px;color:var(--muted);line-height:1.7}
-  .desktop-section{padding:80px 48px;max-width:1100px;margin:0 auto}
-  .desktop-card{background:var(--card);border:1px solid var(--border);border-radius:24px;padding:64px;display:flex;align-items:center;justify-content:space-between;gap:48px;position:relative;overflow:hidden}
-  .desktop-card::before{content:'';position:absolute;top:-100px;right:-100px;width:400px;height:400px;background:radial-gradient(circle,rgba(0,255,136,.08) 0%,transparent 70%);pointer-events:none}
-  .desktop-content h2{font-size:40px;font-weight:800;letter-spacing:-1px;margin-bottom:16px}
-  .desktop-content p{font-size:16px;color:var(--muted);line-height:1.7;margin-bottom:32px;max-width:420px}
-  .desktop-btns{display:flex;gap:16px;flex-wrap:wrap}
-  .btn-primary{background:linear-gradient(135deg,var(--cyan),var(--green));color:var(--bg);border:none;padding:14px 28px;border-radius:12px;font-family:var(--font-display);font-size:15px;font-weight:700;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:8px;transition:all .2s}
-  .btn-primary:hover{transform:scale(1.03);box-shadow:0 0 30px rgba(0,229,255,.3)}
-  .btn-secondary{background:transparent;color:var(--text);border:1px solid var(--border);padding:14px 28px;border-radius:12px;font-family:var(--font-display);font-size:15px;font-weight:600;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:8px;transition:all .2s}
-  .btn-secondary:hover{border-color:var(--cyan);color:var(--cyan)}
-  .desktop-visual{flex-shrink:0;width:280px;height:280px;background:rgba(0,229,255,.05);border:1px solid rgba(0,229,255,.1);border-radius:24px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px}
-  .app-size{font-family:var(--font-mono);font-size:11px;background:rgba(0,255,136,.1);color:var(--green);padding:4px 12px;border-radius:100px;border:1px solid rgba(0,255,136,.2)}
-  footer{padding:48px;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
-  .footer-logo{font-size:20px;font-weight:800}
-  .footer-logo span{color:var(--cyan)}
-  .footer-note{font-family:var(--font-mono);font-size:12px;color:var(--muted)}
-  .footer-links{display:flex;gap:24px}
-  .footer-links a{font-family:var(--font-mono);font-size:12px;color:var(--muted);text-decoration:none;transition:color .2s}
-  .footer-links a:hover{color:var(--cyan)}
-  ::-webkit-scrollbar{width:6px}
-  ::-webkit-scrollbar-track{background:var(--bg)}
-  ::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
-  ::-webkit-scrollbar-thumb:hover{background:var(--cyan)}
-  @media(max-width:768px){nav{padding:16px 24px}.nav-links{display:none}.hero{padding:100px 24px 60px}.downloader{flex-direction:column}.quality-wrapper{width:100%;justify-content:space-between}.hero-stats{gap:24px}.steps{grid-template-columns:1fr}.features-grid{grid-template-columns:1fr}.desktop-card{flex-direction:column;padding:32px}.desktop-visual{width:100%}.platforms,.how,.features,.desktop-section{padding:60px 24px}footer{flex-direction:column;gap:24px;text-align:center}}
+  @media(max-width:768px){nav{padding:16px 24px}.nav-links{display:none}.hero{padding:100px 24px 60px}.downloader{flex-direction:column}.quality-wrapper{width:100%;justify-content:space-between}.hero-stats{gap:24px}.steps{grid-template-columns:1fr}.features-grid{grid-template-columns:1fr}.platforms,.how,.features{padding:60px 24px}}
 </style>
 </head>
 <body>
@@ -127,17 +104,15 @@
     <span class="logo-text">Down<span>lynk</span></span>
   </a>
   <ul class="nav-links">
-    <li><a href="#how">How it Works</a></li>
     <li><a href="#platforms">Platforms</a></li>
     <li><a href="#features">Features</a></li>
-    <li><a href="#desktop" class="nav-cta">Desktop App</a></li>
   </ul>
 </nav>
 
 <section class="hero">
-  <div class="hero-badge"><span class="badge-dot"></span>FREE · NO SIGNUP · NO ADS</div>
+  <div class="hero-badge"><span class="badge-dot"></span>UNIVERSAL DOWNLOADER</div>
   <h1><span class="line1">Download</span><br><span class="line2">Anything.</span></h1>
-  <p>Paste any video URL and download instantly. YouTube, Facebook, Instagram, TikTok and more — free forever.</p>
+  <p>YouTube, Movies, TV Shows, Instagram, TikTok — if it plays in browser, we can download it.</p>
 
   <div class="video-info" id="videoInfo">
     <img class="video-thumb" id="videoThumb" src="" alt="thumbnail"/>
@@ -150,7 +125,7 @@
 
   <div class="downloader-wrapper">
     <div class="downloader">
-      <input class="url-input" type="text" id="urlInput" placeholder="Paste video URL here... (YouTube, Instagram, TikTok...)"/>
+      <input class="url-input" type="text" id="urlInput" placeholder="Paste ANY video URL here... (YouTube, Movies, TV shows...)"/>
       
       <div class="format-toggle">
         <button class="format-btn active" id="formatVideo" onclick="setFormat('video')">Video</button>
@@ -160,13 +135,12 @@
       <div class="quality-wrapper">
         <span class="quality-label">Quality</span>
         <select class="quality-select" id="qualitySelect">
+          <option value="best">⭐ Best Available</option>
           <option value="4k">🎬 4K (2160p)</option>
-          <option value="1440p">🖥️ 2K (1440p)</option>
           <option value="1080p">📺 1080p HD</option>
           <option value="720p" selected>💻 720p HD</option>
           <option value="480p">📱 480p</option>
           <option value="360p">⚡ 360p</option>
-          <option value="240p">🐢 240p</option>
         </select>
       </div>
       
@@ -184,76 +158,42 @@
   <div class="status-msg" id="statusMsg"></div>
 
   <div class="hero-stats">
-    <div class="stat"><div class="stat-num">1000+</div><div class="stat-label">SITES SUPPORTED</div></div>
-    <div class="stat"><div class="stat-num">FREE</div><div class="stat-label">FOREVER</div></div>
+    <div class="stat"><div class="stat-num">1000+</div><div class="stat-label">SITES</div></div>
     <div class="stat"><div class="stat-num">4K</div><div class="stat-label">MAX QUALITY</div></div>
+    <div class="stat"><div class="stat-num">FREE</div><div class="stat-label">FOREVER</div></div>
   </div>
 </section>
 
 <section class="platforms" id="platforms">
   <div style="max-width:1100px;margin:0 auto">
-    <div class="section-label">// SUPPORTED PLATFORMS</div>
-    <h2 class="section-title">Works everywhere<br>you watch.</h2>
+    <div class="section-label">// SUPPORTED</div>
+    <h2 class="section-title">Works on any site.</h2>
     <div class="platforms-grid">
-      <div class="platform-card"><div class="platform-icon">▶️</div><div class="platform-name">YouTube</div><div class="platform-tag">VIDEO + SHORTS</div></div>
-      <div class="platform-card"><div class="platform-icon">📘</div><div class="platform-name">Facebook</div><div class="platform-tag">VIDEO + REELS</div></div>
-      <div class="platform-card"><div class="platform-icon">📸</div><div class="platform-name">Instagram</div><div class="platform-tag">REELS + POSTS</div></div>
-      <div class="platform-card"><div class="platform-icon">🎵</div><div class="platform-name">TikTok</div><div class="platform-tag">VIDEO + AUDIO</div></div>
-      <div class="platform-card"><div class="platform-icon">🐦</div><div class="platform-name">Twitter/X</div><div class="platform-tag">VIDEOS + GIFS</div></div>
-      <div class="platform-card"><div class="platform-icon">🎬</div><div class="platform-name">Vimeo</div><div class="platform-tag">HD VIDEO</div></div>
+      <div class="platform-card"><div class="platform-icon">▶️</div><div class="platform-name">YouTube</div></div>
+      <div class="platform-card"><div class="platform-icon">🎬</div><div class="platform-name">Movies</div></div>
+      <div class="platform-card"><div class="platform-icon">📺</div><div class="platform-name">TV Shows</div></div>
+      <div class="platform-card"><div class="platform-icon">📸</div><div class="platform-name">Instagram</div></div>
+      <div class="platform-card"><div class="platform-icon">🎵</div><div class="platform-name">TikTok</div></div>
+      <div class="platform-card"><div class="platform-icon">🐦</div><div class="platform-name">Twitter/X</div></div>
     </div>
-  </div>
-</section>
-
-<section class="how" id="how">
-  <div class="section-label">// HOW IT WORKS</div>
-  <h2 class="section-title">Three steps.<br>That's it.</h2>
-  <div class="steps">
-    <div class="step-card"><div class="step-num">01</div><div class="step-title">Paste the URL</div><div class="step-desc">Copy any video link from YouTube, Facebook, Instagram or any supported platform and paste it above.</div></div>
-    <div class="step-card"><div class="step-num">02</div><div class="step-title">Choose Quality</div><div class="step-desc">Select your preferred resolution from 240p to 4K, or extract audio only. Full control over your download.</div></div>
-    <div class="step-card"><div class="step-num">03</div><div class="step-title">Save Your File</div><div class="step-desc">Your video downloads directly to your device. No account needed, no watermark, no ads. Just your file.</div></div>
   </div>
 </section>
 
 <section class="features" id="features">
   <div class="features-inner">
     <div class="section-label">// FEATURES</div>
-    <h2 class="section-title">Everything you need.<br>Nothing you don't.</h2>
+    <h2 class="section-title">Universal power.</h2>
     <div class="features-grid">
-      <div class="feature-card"><div class="feature-icon">⚡</div><div class="feature-content"><h3>Lightning Fast</h3><p>Downloads start instantly. No queues, no waiting. Your file, right now.</p></div></div>
-      <div class="feature-card"><div class="feature-icon">🎯</div><div class="feature-content"><h3>240p to 4K Quality</h3><p>Full resolution control. From data-saving 240p to crystal-clear 4K Ultra HD.</p></div></div>
-      <div class="feature-card"><div class="feature-icon">🎵</div><div class="feature-content"><h3>Audio Extraction</h3><p>Download just the audio track. Perfect for music, podcasts, and interviews.</p></div></div>
-      <div class="feature-card"><div class="feature-icon">💻</div><div class="feature-content"><h3>Desktop App Available</h3><p>Want more power? Get our Windows app with history, pause/resume, and batch downloads.</p></div></div>
+      <div class="feature-card"><div class="feature-icon">🌐</div><div class="feature-content"><h3>Any Website</h3><p>Advanced extractor works on virtually any video URL, including movie streaming sites.</p></div></div>
+      <div class="feature-card"><div class="feature-icon">⚡</div><div class="feature-content"><h3>Live Progress</h3><p>Real-time download progress bar with speed and ETA tracking.</p></div></div>
+      <div class="feature-card"><div class="feature-icon">🛡️</div><div class="feature-content"><h3>Anti-Detection</h3><p>Rotating user agents and browser headers to bypass restrictions.</p></div></div>
+      <div class="feature-card"><div class="feature-icon">🎵</div><div class="feature-content"><h3>Audio Extract</h3><p>Download just the audio track in high-quality MP3 format.</p></div></div>
     </div>
   </div>
 </section>
 
-<section class="desktop-section" id="desktop">
-  <div class="desktop-card">
-    <div class="desktop-content">
-      <div class="section-label">// DESKTOP APP</div>
-      <h2>Power user?<br>Get the app.</h2>
-      <p>The Downlynk desktop app gives you download history, pause & resume, custom save locations — all on your Windows PC.</p>
-      <div class="desktop-btns">
-        <a href="#" class="btn-primary" target="_blank">⬇ Download for Windows</a>
-        <a href="#" class="btn-secondary">Learn More</a>
-      </div>
-    </div>
-    <div class="desktop-visual">
-      <div style="font-size: 64px;">💻</div>
-      <div class="app-size">v1.2.0 • 45MB</div>
-    </div>
-  </div>
-</section>
-
-<footer>
-  <div class="footer-logo">Down<span>lynk</span></div>
-  <div class="footer-note">Free, fast, and unlimited video downloads.</div>
-  <div class="footer-links">
-    <a href="#">Privacy Policy</a>
-    <a href="#">Terms of Service</a>
-    <a href="#">Contact</a>
-  </div>
+<footer style="padding:48px;border-top:1px solid var(--border);text-align:center;color:var(--muted);font-family:var(--font-mono);font-size:12px;">
+  <div>⚠️ Only download content you have rights to. Educational use only.</div>
 </footer>
 
 <script>
@@ -287,7 +227,7 @@
 
   async function fetchInfo(url) {
     const statusMsg = document.getElementById('statusMsg');
-    statusMsg.textContent = "Fetching video info...";
+    statusMsg.textContent = "🔍 Analyzing URL...";
     statusMsg.className = "status-msg";
     document.getElementById('videoInfo').classList.remove('active');
 
@@ -301,12 +241,12 @@
       const data = await res.json();
 
       if (!res.ok || data.error) {
-        statusMsg.textContent = "⚠️ " + (data.error || "Failed to fetch video info.");
+        statusMsg.innerHTML = `<span style="color:var(--red)">⚠️ ${data.error || 'Failed to fetch'}</span>`;
         statusMsg.className = "status-msg error";
         return; 
       }
 
-      document.getElementById('videoThumb').src = data.thumbnail || '';
+      document.getElementById('videoThumb').src = data.thumbnail || 'https://via.placeholder.com/120x68/0f1824/00e5ff?text=VIDEO';
       document.getElementById('videoTitle').textContent = data.title;
       document.getElementById('videoSub').textContent = `${data.uploader} • ${data.platform}`;
       
@@ -323,11 +263,10 @@
       }
 
       document.getElementById('videoInfo').classList.add('active');
-      statusMsg.textContent = "";
+      statusMsg.textContent = "✅ Ready to download";
       
     } catch (err) {
-      console.error("Fetch Error:", err);
-      statusMsg.textContent = "⚠️ Network error. Is the backend running?";
+      statusMsg.textContent = "⚠️ Backend connection error";
       statusMsg.className = "status-msg error";
     }
   }
@@ -337,7 +276,7 @@
     
     const url = urlInput.value.trim();
     if (!url) {
-      alert("Please enter a URL first!");
+      alert("Enter URL first!");
       return;
     }
 
@@ -357,7 +296,7 @@
     progressBox.classList.add('active');
     progressBar.style.width = '0%';
     progressPct.innerText = '0%';
-    progressText.innerText = 'Initializing...';
+    progressText.innerText = 'Connecting...';
     statusMsg.innerText = '';
     statusMsg.className = 'status-msg';
     
@@ -365,12 +304,13 @@
     
     let downloadComplete = false;
     
+    // Poll every 800ms for progress
     progressInterval = setInterval(async () => {
       if (downloadComplete) return;
       
       try {
         const res = await fetch(`${BACKEND_URL}/progress/${fileId}`);
-        if (!res.ok) throw new Error('Progress fetch failed');
+        if (!res.ok) return;
         
         const data = await res.json();
         
@@ -378,53 +318,48 @@
           progressBar.style.width = data.percent;
           progressPct.innerText = data.percent;
           
-          let statusText = data.status;
-          if (data.speed && data.eta && data.speed !== '0 B/s') {
-            statusText += ` • ${data.speed} • ETA: ${data.eta}`;
+          let text = data.status;
+          if (data.speed && data.speed !== '0 B/s' && data.speed !== 'Unknown') {
+            text += ` • ${data.speed}`;
           }
-          progressText.innerText = statusText;
+          if (data.eta && data.eta !== 'Unknown' && data.eta !== '00:00') {
+            text += ` • ETA: ${data.eta}`;
+          }
+          progressText.innerText = text;
           
-          if (parseInt(data.percent) > 0 && parseInt(data.percent) < 100) {
+          const pctNum = parseInt(data.percent);
+          if (pctNum > 5 && pctNum < 100) {
             btn.innerHTML = '⏳ Downloading...';
           }
         }
-      } catch (e) { 
-        console.log("Progress poll error:", e);
-      }
-    }, 1000);
+      } catch (e) {}
+    }, 800);
 
     try {
       const response = await fetch(`${BACKEND_URL}/download`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-          url: url, 
-          quality: quality, 
-          format: currentFormat, 
-          file_id: fileId 
-        })
+        body: JSON.stringify({ url, quality, format: currentFormat, file_id: fileId })
       });
 
       downloadComplete = true;
       clearInterval(progressInterval);
 
       if (!response.ok) {
-        const errData = await response.json().catch(() => ({error: 'Unknown error'}));
-        throw new Error(errData.error || 'Download failed');
+        const err = await response.json();
+        throw new Error(err.error || 'Download failed');
       }
 
       progressText.innerText = '✅ Finalizing...';
       progressBar.style.width = '100%';
       progressPct.innerText = '100%';
-      btn.innerHTML = '⏳ Saving...';
 
-      const contentDisposition = response.headers.get('Content-Disposition');
-      let filename = `downlynk_${currentFormat}_${Date.now()}`;
-      if (contentDisposition) {
-        const match = contentDisposition.match(/filename="?([^"]+)"?/);
+      // Get filename from header or create one
+      const disposition = response.headers.get('Content-Disposition');
+      let filename = `video_${Date.now()}.mp4`;
+      if (disposition) {
+        const match = disposition.match(/filename="?([^"]+)"?/);
         if (match) filename = match[1];
-      } else {
-        filename += currentFormat === 'audio' ? '.mp3' : '.mp4';
       }
 
       const blob = await response.blob();
@@ -437,21 +372,16 @@
       a.remove();
       window.URL.revokeObjectURL(downloadUrl);
 
-      statusMsg.className = 'status-msg success';
-      statusMsg.innerText = '🎉 Download complete! Check your downloads folder.';
-      progressText.innerText = '✅ Complete';
+      statusMsg.innerHTML = '<span style="color:var(--green)">✅ Download complete! Check your downloads folder.</span>';
+      progressText.innerText = '✅ Done';
       
-      setTimeout(() => {
-        progressBox.classList.remove('active');
-      }, 3000);
+      setTimeout(() => progressBox.classList.remove('active'), 3000);
       
     } catch (error) {
       downloadComplete = true;
       clearInterval(progressInterval);
-      statusMsg.className = 'status-msg error';
-      statusMsg.innerText = '⚠️ ' + error.message;
+      statusMsg.innerHTML = `<span style="color:var(--red)">❌ ${error.message}</span>`;
       progressBox.classList.remove('active');
-      console.error("Download error:", error);
     } finally {
       isDownloading = false;
       btn.disabled = false;
