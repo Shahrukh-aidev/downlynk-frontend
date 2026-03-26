@@ -121,225 +121,6 @@
 </head>
 <body>
 
-<script>
-  const BACKEND_URL = 'https://downlynk-backend-production-223e.up.railway.app';
-  
-  // Global state
-  let currentFormat = 'video';
-  let progressInterval = null;
-  let isDownloading = false;
-
-  function setFormat(format) {
-    currentFormat = format;
-    document.getElementById('formatVideo').classList.toggle('active', format === 'video');
-    document.getElementById('formatAudio').classList.toggle('active', format === 'audio');
-    document.querySelector('.quality-wrapper').style.opacity = format === 'audio' ? '0.5' : '1';
-    document.getElementById('qualitySelect').disabled = format === 'audio';
-  }
-
-  const urlInput = document.getElementById('urlInput');
-  let typingTimer;
-
-  // Auto-fetch info when user stops typing
-  urlInput.addEventListener('input', function() {
-    clearTimeout(typingTimer);
-    const url = this.value.trim();
-    if (url) {
-      typingTimer = setTimeout(() => fetchInfo(url), 800);
-    } else {
-      document.getElementById('videoInfo').classList.remove('active');
-      document.getElementById('statusMsg').textContent = "";
-    }
-  });
-
-  async function fetchInfo(url) {
-    const statusMsg = document.getElementById('statusMsg');
-    statusMsg.textContent = "Fetching video info...";
-    statusMsg.className = "status-msg";
-    document.getElementById('videoInfo').classList.remove('active');
-
-    try {
-      const res = await fetch(`${BACKEND_URL}/info`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ url })
-      });
-      
-      const data = await res.json();
-
-      if (!res.ok || data.error) {
-        statusMsg.textContent = "⚠️ " + (data.error || "Failed to fetch video info.");
-        statusMsg.className = "status-msg error";
-        return; 
-      }
-
-      document.getElementById('videoThumb').src = data.thumbnail || '';
-      document.getElementById('videoTitle').textContent = data.title;
-      document.getElementById('videoSub').textContent = `${data.uploader} • ${data.platform}`;
-      
-      const qContainer = document.getElementById('videoQualities');
-      qContainer.innerHTML = '';
-      
-      if (data.qualities && Array.isArray(data.qualities)) {
-        data.qualities.forEach(q => {
-          const span = document.createElement('span');
-          span.className = 'quality-tag';
-          span.textContent = q;
-          qContainer.appendChild(span);
-        });
-      }
-
-      document.getElementById('videoInfo').classList.add('active');
-      statusMsg.textContent = "";
-      
-    } catch (err) {
-      console.error("Fetch Error:", err);
-      statusMsg.textContent = "⚠️ Network error. Is the backend running?";
-      statusMsg.className = "status-msg error";
-    }
-  }
-
-  async function startDownload() {
-    if (isDownloading) return;
-    
-    const url = urlInput.value.trim();
-    if (!url) {
-      alert("Please enter a URL first!");
-      return;
-    }
-
-    const quality = document.getElementById('qualitySelect').value;
-    const btn = document.getElementById('downloadBtn');
-    const progressBox = document.getElementById('progressBox');
-    const progressBar = document.getElementById('progressBar');
-    const progressText = document.getElementById('progressText');
-    const progressPct = document.getElementById('progressPct');
-    const statusMsg = document.getElementById('statusMsg');
-
-    // Generate unique file ID
-    const fileId = "dl_" + Date.now() + "_" + Math.floor(Math.random() * 1000);
-    
-    // Reset UI
-    isDownloading = true;
-    btn.disabled = true;
-    btn.innerHTML = '⏳ Starting...';
-    progressBox.classList.add('active');
-    progressBar.style.width = '0%';
-    progressPct.innerText = '0%';
-    progressText.innerText = 'Initializing...';
-    statusMsg.innerText = '';
-    statusMsg.className = 'status-msg';
-    
-    // Clear any existing interval
-    if (progressInterval) clearInterval(progressInterval);
-    
-    let downloadComplete = false;
-    
-    // Start polling for progress
-    progressInterval = setInterval(async () => {
-      if (downloadComplete) return;
-      
-      try {
-        const res = await fetch(`${BACKEND_URL}/progress/${fileId}`);
-        if (!res.ok) throw new Error('Progress fetch failed');
-        
-        const data = await res.json();
-        
-        if (data.percent) {
-          // Parse percentage (remove % sign if present)
-          const pct = data.percent.replace('%', '').trim();
-          progressBar.style.width = data.percent;
-          progressPct.innerText = data.percent;
-          
-          let statusText = data.status;
-          if (data.speed && data.eta && data.speed !== '0 B/s') {
-            statusText += ` • ${data.speed} • ETA: ${data.eta}`;
-          }
-          progressText.innerText = statusText;
-          
-          // Visual feedback
-          if (parseInt(pct) > 0 && parseInt(pct) < 100) {
-            btn.innerHTML = '⏳ Downloading...';
-          }
-        }
-      } catch (e) { 
-        // Silent fail - don't stop download if progress check fails
-        console.log("Progress poll error:", e);
-      }
-    }, 1000);
-
-    // Start the actual download
-    try {
-      const response = await fetch(`${BACKEND_URL}/download`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-          url: url, 
-          quality: quality, 
-          format: currentFormat, 
-          file_id: fileId 
-        })
-      });
-
-      downloadComplete = true;
-      clearInterval(progressInterval);
-
-      if (!response.ok) {
-        const errData = await response.json().catch(() => ({error: 'Unknown error'}));
-        throw new Error(errData.error || 'Download failed');
-      }
-
-      // Success! Update UI
-      progressText.innerText = '✅ Finalizing...';
-      progressBar.style.width = '100%';
-      progressPct.innerText = '100%';
-      btn.innerHTML = '⏳ Saving...';
-
-      // Get filename from headers
-      const contentDisposition = response.headers.get('Content-Disposition');
-      let filename = `downlynk_${currentFormat}_${Date.now()}`;
-      if (contentDisposition) {
-        const match = contentDisposition.match(/filename="?([^"]+)"?/);
-        if (match) filename = match[1];
-      } else {
-        filename += currentFormat === 'audio' ? '.mp3' : '.mp4';
-      }
-
-      // Download the blob
-      const blob = await response.blob();
-      const downloadUrl = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = downloadUrl;
-      a.download = filename;
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      window.URL.revokeObjectURL(downloadUrl);
-
-      // Success state
-      statusMsg.className = 'status-msg success';
-      statusMsg.innerText = '🎉 Download complete! Check your downloads folder.';
-      progressText.innerText = '✅ Complete';
-      
-      setTimeout(() => {
-        progressBox.classList.remove('active');
-      }, 3000);
-      
-    } catch (error) {
-      downloadComplete = true;
-      clearInterval(progressInterval);
-      statusMsg.className = 'status-msg error';
-      statusMsg.innerText = '⚠️ ' + error.message;
-      progressBox.classList.remove('active');
-      console.error("Download error:", error);
-    } finally {
-      isDownloading = false;
-      btn.disabled = false;
-      btn.innerHTML = '<span>⬇</span> Download';
-    }
-  }
-</script>
-
 <nav>
   <a href="#" class="logo">
     <div class="logo-icon">▶</div>
@@ -474,6 +255,210 @@
     <a href="#">Contact</a>
   </div>
 </footer>
+
+<script>
+  const BACKEND_URL = 'https://downlynk-backend-production-223e.up.railway.app';
+  
+  let currentFormat = 'video';
+  let progressInterval = null;
+  let isDownloading = false;
+
+  function setFormat(format) {
+    currentFormat = format;
+    document.getElementById('formatVideo').classList.toggle('active', format === 'video');
+    document.getElementById('formatAudio').classList.toggle('active', format === 'audio');
+    document.querySelector('.quality-wrapper').style.opacity = format === 'audio' ? '0.5' : '1';
+    document.getElementById('qualitySelect').disabled = format === 'audio';
+  }
+
+  const urlInput = document.getElementById('urlInput');
+  let typingTimer;
+
+  urlInput.addEventListener('input', function() {
+    clearTimeout(typingTimer);
+    const url = this.value.trim();
+    if (url) {
+      typingTimer = setTimeout(() => fetchInfo(url), 800);
+    } else {
+      document.getElementById('videoInfo').classList.remove('active');
+      document.getElementById('statusMsg').textContent = "";
+    }
+  });
+
+  async function fetchInfo(url) {
+    const statusMsg = document.getElementById('statusMsg');
+    statusMsg.textContent = "Fetching video info...";
+    statusMsg.className = "status-msg";
+    document.getElementById('videoInfo').classList.remove('active');
+
+    try {
+      const res = await fetch(`${BACKEND_URL}/info`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url })
+      });
+      
+      const data = await res.json();
+
+      if (!res.ok || data.error) {
+        statusMsg.textContent = "⚠️ " + (data.error || "Failed to fetch video info.");
+        statusMsg.className = "status-msg error";
+        return; 
+      }
+
+      document.getElementById('videoThumb').src = data.thumbnail || '';
+      document.getElementById('videoTitle').textContent = data.title;
+      document.getElementById('videoSub').textContent = `${data.uploader} • ${data.platform}`;
+      
+      const qContainer = document.getElementById('videoQualities');
+      qContainer.innerHTML = '';
+      
+      if (data.qualities && Array.isArray(data.qualities)) {
+        data.qualities.forEach(q => {
+          const span = document.createElement('span');
+          span.className = 'quality-tag';
+          span.textContent = q;
+          qContainer.appendChild(span);
+        });
+      }
+
+      document.getElementById('videoInfo').classList.add('active');
+      statusMsg.textContent = "";
+      
+    } catch (err) {
+      console.error("Fetch Error:", err);
+      statusMsg.textContent = "⚠️ Network error. Is the backend running?";
+      statusMsg.className = "status-msg error";
+    }
+  }
+
+  async function startDownload() {
+    if (isDownloading) return;
+    
+    const url = urlInput.value.trim();
+    if (!url) {
+      alert("Please enter a URL first!");
+      return;
+    }
+
+    const quality = document.getElementById('qualitySelect').value;
+    const btn = document.getElementById('downloadBtn');
+    const progressBox = document.getElementById('progressBox');
+    const progressBar = document.getElementById('progressBar');
+    const progressText = document.getElementById('progressText');
+    const progressPct = document.getElementById('progressPct');
+    const statusMsg = document.getElementById('statusMsg');
+
+    const fileId = "dl_" + Date.now() + "_" + Math.floor(Math.random() * 1000);
+    
+    isDownloading = true;
+    btn.disabled = true;
+    btn.innerHTML = '⏳ Starting...';
+    progressBox.classList.add('active');
+    progressBar.style.width = '0%';
+    progressPct.innerText = '0%';
+    progressText.innerText = 'Initializing...';
+    statusMsg.innerText = '';
+    statusMsg.className = 'status-msg';
+    
+    if (progressInterval) clearInterval(progressInterval);
+    
+    let downloadComplete = false;
+    
+    progressInterval = setInterval(async () => {
+      if (downloadComplete) return;
+      
+      try {
+        const res = await fetch(`${BACKEND_URL}/progress/${fileId}`);
+        if (!res.ok) throw new Error('Progress fetch failed');
+        
+        const data = await res.json();
+        
+        if (data.percent) {
+          progressBar.style.width = data.percent;
+          progressPct.innerText = data.percent;
+          
+          let statusText = data.status;
+          if (data.speed && data.eta && data.speed !== '0 B/s') {
+            statusText += ` • ${data.speed} • ETA: ${data.eta}`;
+          }
+          progressText.innerText = statusText;
+          
+          if (parseInt(data.percent) > 0 && parseInt(data.percent) < 100) {
+            btn.innerHTML = '⏳ Downloading...';
+          }
+        }
+      } catch (e) { 
+        console.log("Progress poll error:", e);
+      }
+    }, 1000);
+
+    try {
+      const response = await fetch(`${BACKEND_URL}/download`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          url: url, 
+          quality: quality, 
+          format: currentFormat, 
+          file_id: fileId 
+        })
+      });
+
+      downloadComplete = true;
+      clearInterval(progressInterval);
+
+      if (!response.ok) {
+        const errData = await response.json().catch(() => ({error: 'Unknown error'}));
+        throw new Error(errData.error || 'Download failed');
+      }
+
+      progressText.innerText = '✅ Finalizing...';
+      progressBar.style.width = '100%';
+      progressPct.innerText = '100%';
+      btn.innerHTML = '⏳ Saving...';
+
+      const contentDisposition = response.headers.get('Content-Disposition');
+      let filename = `downlynk_${currentFormat}_${Date.now()}`;
+      if (contentDisposition) {
+        const match = contentDisposition.match(/filename="?([^"]+)"?/);
+        if (match) filename = match[1];
+      } else {
+        filename += currentFormat === 'audio' ? '.mp3' : '.mp4';
+      }
+
+      const blob = await response.blob();
+      const downloadUrl = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = downloadUrl;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      window.URL.revokeObjectURL(downloadUrl);
+
+      statusMsg.className = 'status-msg success';
+      statusMsg.innerText = '🎉 Download complete! Check your downloads folder.';
+      progressText.innerText = '✅ Complete';
+      
+      setTimeout(() => {
+        progressBox.classList.remove('active');
+      }, 3000);
+      
+    } catch (error) {
+      downloadComplete = true;
+      clearInterval(progressInterval);
+      statusMsg.className = 'status-msg error';
+      statusMsg.innerText = '⚠️ ' + error.message;
+      progressBox.classList.remove('active');
+      console.error("Download error:", error);
+    } finally {
+      isDownloading = false;
+      btn.disabled = false;
+      btn.innerHTML = '<span>⬇</span> Download';
+    }
+  }
+</script>
 
 </body>
 </html>
