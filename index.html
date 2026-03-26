@@ -262,6 +262,7 @@
 
 <script>
   let currentFormat = 'video';
+  let progressInterval;
 
   function setFormat(format) {
     currentFormat = format;
@@ -305,7 +306,7 @@
       if (!res.ok || data.error) {
         statusMsg.textContent = "⚠️ " + (data.error || "Failed to fetch video info.");
         statusMsg.className = "status-msg error";
-        return; // Stop execution to prevent UI crash
+        return; 
       }
 
       // If no error, populate the UI normally
@@ -336,61 +337,102 @@
     }
   }
 
-  function startDownload() {
+  async function startDownload() {
     const url = urlInput.value.trim();
-    if (!url) return alert("Please enter a URL");
-    
+    if (!url) return alert("Please enter a URL first!");
+
     const quality = document.getElementById('qualitySelect').value;
     const btn = document.getElementById('downloadBtn');
+    const progressBox = document.getElementById('progressBox');
+    const progressBar = document.getElementById('progressBar');
+    const progressText = document.getElementById('progressText');
+    const progressPct = document.getElementById('progressPct');
     const statusMsg = document.getElementById('statusMsg');
-    
+
+    // 1. Setup UI
     btn.disabled = true;
-    btn.innerHTML = '⏳ Downloading...';
-    statusMsg.textContent = "Requesting download... this might take a minute.";
-    statusMsg.className = "status-msg";
+    btn.innerHTML = '⏳ Processing...';
+    progressBox.classList.add('active');
+    progressBar.style.width = '0%';
+    progressPct.innerText = '0%';
+    statusMsg.innerText = '';
+    statusMsg.className = 'status-msg';
+    
+    // 2. Generate a unique ID so we can track this specific download
+    const fileId = "dl_" + Date.now() + "_" + Math.floor(Math.random() * 1000);
 
-    fetch(`${BACKEND_URL}/download`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ url, quality, format: currentFormat })
-    })
-    .then(async res => {
-      if (!res.ok) {
-         const data = await res.json();
-         throw new Error(data.error || "Download failed");
-      }
-      
-      const disposition = res.headers.get('Content-Disposition');
-      let filename = "download.mp4";
-      if (disposition && disposition.indexOf('filename="') !== -1) {
-         filename = disposition.split('filename="')[1].split('"')[0];
+    // 3. Start asking the server for progress every 1 second
+    progressInterval = setInterval(async () => {
+      try {
+        const res = await fetch(`${BACKEND_URL}/progress/${fileId}`);
+        const data = await res.json();
+        
+        if (data.percent) {
+          // yt-dlp returns percent with a '%' sign
+          progressBar.style.width = data.percent;
+          progressPct.innerText = data.percent;
+          
+          let statusText = data.status;
+          if (data.speed && data.eta) statusText += ` (${data.speed} - ETA: ${data.eta})`;
+          progressText.innerText = statusText;
+        }
+      } catch (e) { console.error("Progress poll error", e); }
+    }, 1000);
+
+    // 4. Actually start the download request
+    try {
+      const response = await fetch(`${BACKEND_URL}/download`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url: url, quality: quality, format: currentFormat, file_id: fileId })
+      });
+
+      if (!response.ok) {
+        const err = await response.json();
+        throw new Error(err.error || 'Download failed');
       }
 
-      return res.blob().then(blob => ({ blob, filename }));
-    })
-    .then(({ blob, filename }) => {
+      // 5. Download complete! Grab the file and trigger the browser save dialog
+      clearInterval(progressInterval);
+      progressText.innerText = '✅ Transferring to your device...';
+      progressBar.style.width = '100%';
+      progressPct.innerText = '100%';
+
+      const blob = await response.blob();
       const downloadUrl = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
+      
+      // Try to get filename from headers, otherwise use a fallback
+      const contentDisposition = response.headers.get('Content-Disposition');
+      let filename = `downlynk_${currentFormat}`;
+      if (contentDisposition) {
+        const match = contentDisposition.match(/filename="(.+)"/);
+        if (match) filename = match[1];
+      } else {
+        filename += currentFormat === 'audio' ? '.mp3' : '.mp4';
+      }
+
       a.href = downloadUrl;
       a.download = filename;
       document.body.appendChild(a);
       a.click();
       a.remove();
       window.URL.revokeObjectURL(downloadUrl);
+
+      statusMsg.className = 'status-msg success';
+      statusMsg.innerText = '🎉 Download complete!';
       
-      statusMsg.textContent = "✅ Download complete!";
-      statusMsg.className = "status-msg success";
-    })
-    .catch(err => {
-      console.error(err);
-      statusMsg.textContent = "❌ " + err.message;
-      statusMsg.className = "status-msg error";
-    })
-    .finally(() => {
+    } catch (error) {
+      clearInterval(progressInterval);
+      statusMsg.className = 'status-msg error';
+      statusMsg.innerText = '⚠️ ' + error.message;
+      progressBox.classList.remove('active');
+    } finally {
       btn.disabled = false;
       btn.innerHTML = '<span>⬇</span> Download';
-    });
+    }
   }
 </script>
+
 </body>
 </html>
