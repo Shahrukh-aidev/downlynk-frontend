@@ -87,7 +87,7 @@
   .step-desc{font-size:14px;color:var(--muted);line-height:1.7}
   .features{padding:80px 48px;background:var(--bg2)}
   .features-inner{max-width:1100px;margin:0 auto}
-  .features-grid{display:grid;grid-template-columns:repeat(2,1fr));gap:24px;margin-top:48px}
+  .features-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:24px;margin-top:48px}   /* fixed CSS */
   .feature-card{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:32px;display:flex;gap:20px;align-items:flex-start;transition:all .3s}
   .feature-card:hover{border-color:rgba(0,255,136,.3)}
   .feature-icon{width:48px;height:48px;background:rgba(0,229,255,.08);border:1px solid rgba(0,229,255,.15);border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
@@ -137,6 +137,7 @@
         <select class="quality-select" id="qualitySelect">
           <option value="best">⭐ Best Available</option>
           <option value="4k">🎬 4K (2160p)</option>
+          <option value="1440p">🖥️ 2K (1440p)</option>   <!-- added -->
           <option value="1080p">📺 1080p HD</option>
           <option value="720p" selected>💻 720p HD</option>
           <option value="480p">📱 480p</option>
@@ -354,7 +355,6 @@
       progressBar.style.width = '100%';
       progressPct.innerText = '100%';
 
-      // Get filename from header or create one
       const disposition = response.headers.get('Content-Disposition');
       let filename = `video_${Date.now()}.mp4`;
       if (disposition) {
