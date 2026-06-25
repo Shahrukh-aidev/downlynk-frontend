@@ -71,7 +71,7 @@ Instead of feeling like an outdated utility website, Downlynk delivers a premium
 
 <p align="center">
 
-<img src="screenshots/home.png" width="100%">
+<img src="DOWNLYNK PIC/Download.jpeg" width="100%">
 
 </p>
 
@@ -81,7 +81,7 @@ Instead of feeling like an outdated utility website, Downlynk delivers a premium
 
 <p align="center">
 
-<img src="screenshots/preview.png" width="100%">
+<img src="DOWNLYNK PIC/Download.jpeg" width="100%">
 
 </p>
 
@@ -102,7 +102,7 @@ before the download even begins.
 
 <p align="center">
 
-<img src="screenshots/progress.png" width="100%">
+<img src="DOWNLYNK PIC/Download1.jpeg" width="100%">
 
 </p>
 
